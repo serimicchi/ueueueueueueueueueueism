@@ -753,5 +753,19 @@
       track.appendChild(span);
     });
   </script>
+  <script>
+  function handleAuth() {
+    if (localStorage.getItem('loggedIn') === 'true') {
+      localStorage.clear();
+      document.getElementById('authBtn').textContent = 'login';
+    } else {
+      window.location.href = 'login/index.html';
+    }
+  }
+
+  if (localStorage.getItem('loggedIn') === 'true') {
+    document.getElementById('authBtn').textContent = 'logout';
+  }
+</script>
 </body>
 </html>

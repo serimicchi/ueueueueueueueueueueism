@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeSigma ✦</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #080610;
+      --deep: #0e0a1a;
+      --pink: #ff2d78;
+      --pink-soft: #ff6faa;
+      --pink-pale: #ffd6e8;
+      --teal: #00f5d4;
+      --yellow: #ffe66d;
+      --purple: #b388ff;
+      --white: #fff0f8;
+      --muted: #6b4f6b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Zen Maru Gothic', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctext y='16' font-size='16'%3E✦%3C/text%3E%3C/svg%3E") 10 10, auto;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── Scanlines ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 45, 120, 0.015) 2px,
+        rgba(255, 45, 120, 0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--deep); }
+    ::-webkit-scrollbar-thumb { background: var(--pink); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(8, 6, 16, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 45, 120, 0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--pink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      position: relative;
+    }
+    .nav-logo::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 2px; top: 1px;
+      color: var(--teal);
+      opacity: 0.5;
+      clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+      animation: glitch-nav 4s infinite;
+    }
+
+    @keyframes glitch-nav {
+      0%, 90%, 100% { transform: translate(0); opacity: 0; }
+      92% { transform: translate(-3px, 1px); opacity: 0.6; }
+      94% { transform: translate(3px, -1px); opacity: 0.6; }
+      96% { transform: translate(0); opacity: 0; }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a:hover { color: var(--pink-soft); }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--pink);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,45,120,0.15), transparent 70%);
+      top: -100px; left: -100px;
+      animation: float-blob 8s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,245,212,0.1), transparent 70%);
+      bottom: -80px; right: -80px;
+      animation: float-blob 10s ease-in-out infinite reverse;
+    }
+    .blob-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(179,136,255,0.1), transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: float-blob 12s ease-in-out infinite 2s;
+    }
+
+    @keyframes float-blob {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    /* Floating sparkles */
+    .sparkles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .sparkle {
+      position: absolute;
+      font-size: 14px;
+      animation: sparkle-float linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes sparkle-float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-20px) rotate(720deg); opacity: 0; }
+    }
+
+    .system-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: fadeSlide 0.8s ease both;
+    }
+    .system-tag::before { content: '> '; opacity: 0.5; }
+
+    .hero-title {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: clamp(48px, 10vw, 110px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+      animation: fadeSlide 0.8s ease 0.1s both;
+      position: relative;
+    }
+
+    .title-main {
+      display: block;
+      color: var(--white);
+      position: relative;
+    }
+    .title-main::before {
+      content: attr(data-text);
+      position: absolute;
+      left: 3px; top: 0;
+      color: var(--pink);
+      clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+      animation: glitch-title 5s infinite 1s;
+    }
+    .title-main::after {
+      content: attr(data-text);
+      position: absolute;
+      left: -3px; top: 0;
+      color: var(--teal);
+      clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+      animation: glitch-title 5s infinite 1.2s;
+    }
+
+    @keyframes glitch-title {
+      0%, 85%, 100% { transform: translate(0); opacity: 0; }
+      87% { transform: translate(-4px, 2px); opacity: 0.7; }
+      89% { transform: translate(4px, -2px); opacity: 0.7; }
+      91% { transform: translate(0); opacity: 0; }
+    }
+
+    .title-sub {
+      display: block;
+      color: var(--pink);
+      font-style: italic;
+      font-size: 0.45em;
+      letter-spacing: 0.05em;
+      margin-top: 8px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.7;
+      margin: 24px auto 40px;
+      animation: fadeSlide 0.8s ease 0.3s both;
+    }
+    .hero-desc em {
+      color: var(--pink-soft);
+      font-style: normal;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeSlide 0.8s ease 0.4s both;
+    }
+
+    .btn-primary {
+      background: var(--pink);
+      color: var(--black);
+      border: none;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      padding: 14px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      transition: transform 0.15s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: var(--pink-soft);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--pink-soft);
+      border: 1px solid rgba(255, 111, 170, 0.4);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      padding: 14px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--pink);
+      color: var(--pink);
+      transform: translateY(-2px);
+    }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      animation: bounce 2s ease-in-out infinite, fadeSlide 1s ease 1s both;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION BASE ── */
+    section {
+      padding: 100px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--pink);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-label::before { content: '✦ '; }
+
+    .section-title {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1.1;
+      margin-bottom: 48px;
+      color: var(--white);
+    }
+    .section-title span { color: var(--pink); }
+
+    /* ── ABOUT CARDS ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 45, 120, 0.04);
+      border: 1px solid rgba(255, 45, 120, 0.15);
+      padding: 32px 28px;
+      position: relative;
+      transition: border-color 0.3s, transform 0.2s;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--pink);
+      transition: height 0.3s;
+    }
+    .card:hover { border-color: rgba(255, 45, 120, 0.5); transform: translateY(-4px); }
+    .card:hover::before { height: 100%; }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .card-title {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .card-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .card-tag {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--teal);
+      border: 1px solid rgba(0, 245, 212, 0.3);
+      padding: 3px 10px;
+    }
+
+    /* ── FAVES SECTION ── */
+    .faves-section {
+      background: rgba(14, 10, 26, 0.8);
+      border-top: 1px solid rgba(255, 45, 120, 0.1);
+      border-bottom: 1px solid rgba(255, 45, 120, 0.1);
+      padding: 100px 40px;
+    }
+    .faves-section > * { max-width: 1100px; margin-left: auto; margin-right: auto; }
+    .faves-section .section-title { max-width: 1100px; }
+
+    .faves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .fave-card {
+      padding: 24px 20px;
+      border: 1px solid rgba(255,255,255, 0.06);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .fave-card:hover { transform: scale(1.02); }
+
+    .fave-card.pink-card { background: linear-gradient(135deg, rgba(255,45,120,0.12), rgba(255,45,120,0.04)); border-color: rgba(255,45,120,0.25); }
+    .fave-card.teal-card { background: linear-gradient(135deg, rgba(0,245,212,0.08), rgba(0,245,212,0.02)); border-color: rgba(0,245,212,0.2); }
+    .fave-card.purple-card { background: linear-gradient(135deg, rgba(179,136,255,0.1), rgba(179,136,255,0.02)); border-color: rgba(179,136,255,0.2); }
+    .fave-card.yellow-card { background: linear-gradient(135deg, rgba(255,230,109,0.08), rgba(255,230,109,0.02)); border-color: rgba(255,230,109,0.2); }
+
+    .fave-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .fave-name {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .fave-card.pink-card .fave-name { color: var(--pink-soft); }
+    .fave-card.teal-card .fave-name { color: var(--teal); }
+    .fave-card.purple-card .fave-name { color: var(--purple); }
+    .fave-card.yellow-card .fave-name { color: var(--yellow); }
+
+    .fave-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid rgba(255,45,120,0.15);
+      border-bottom: 1px solid rgba(255,45,120,0.15);
+      padding: 14px 0;
+      background: rgba(255,45,120,0.03);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 40px;
+      width: max-content;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-item {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+      letter-spacing: 0.1em;
+    }
+    .marquee-item span { color: var(--pink); margin: 0 8px; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 60px 40px;
+      border-top: 1px solid rgba(255,45,120,0.1);
+    }
+    .footer-logo {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--pink);
+      margin-bottom: 12px;
+    }
+    .footer-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+    .footer-text a { color: var(--pink-soft); text-decoration: none; }
+
+    /* ── GLITCH BAR ── */
+    .glitch-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--pink), var(--purple), var(--teal), var(--yellow), var(--pink));
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer {
+      from { background-position: 0% 0%; }
+      to { background-position: 200% 0%; }
+    }
+
+    /* ── ERROR FLICKER (occasional) ── */
+    .error-flicker {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--pink);
+      opacity: 0;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 200;
+      animation: error-show 15s infinite 5s;
+      pointer-events: none;
+    }
+    @keyframes error-show {
+      0%, 90%, 100% { opacity: 0; }
+      91% { opacity: 1; }
+      92% { opacity: 0; }
+      93% { opacity: 1; }
+      95% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Glitch bar top -->
+  <div class="glitch-bar"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo" data-text="DeSigma">DeSigma</a>
+    <ul class="nav-links">
+      <li><a href="#about">about</a></li>
+      <li><a href="#faves">faves</a></li>
+      <li><a href="#">blog</a></li>
+      <li><a href="#">contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="sparkles" id="sparkles"></div>
+
+    <p class="system-tag">system online // welcome back</p>
+    <h1 class="hero-title">
+      <span class="title-main" data-text="De Skibidi">De Skibidi</span>
+      <span class="title-sub">★ Sigma ★</span>
+    </h1>
+    <p class="hero-desc">
+      a little corner of the internet for <em>music, games & everything in between</em>.
+      powered by vocaloid and too many gacha pulls.
+    </p>
+    <div class="hero-btns">
+      <a href="#about" class="btn-primary">enter ✦</a>
+      <a href="#faves" class="btn-ghost">my faves →</a>
+    </div>
+
+    <p class="scroll-hint">▼ scroll down ▼</p>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- About -->
+  <section id="about">
+    <p class="section-label">about this place</p>
+    <h2 class="section-title">who's behind<br/><span>DeSigma?</span></h2>
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">🎵</span>
+        <h3 class="card-title">music obsessed</h3>
+        <p class="card-text">vocaloid producer rabbit hole resident. if it slaps in project sekai it slaps in real life. currently rotating the same 5 songs on loop.</p>
+        <span class="card-tag">pjsk enjoyer</span>
+      </div>
+      <div class="card">
+        <span class="card-icon">📡</span>
+        <h3 class="card-title">internet creature</h3>
+        <p class="card-text">KAngel understood the assignment. needy streamer overload broke my brain in the best way. i am normal about this game. (i am not normal.)</p>
+        <span class="card-tag">nso survivor</span>
+      </div>
+      <div class="card">
+        <span class="card-icon">✦</span>
+        <h3 class="card-title">this website</h3>
+        <p class="card-text">a personal fan space built with way too much passion and slightly too little sleep. still figuring out the code tbh.</p>
+        <span class="card-tag">work in progress</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Faves -->
+  <div class="faves-section" id="faves">
+    <p class="section-label" style="max-width:1100px;margin:0 auto 12px;">current obsessions</p>
+    <h2 class="section-title" style="max-width:1100px;">things i <span>cannot</span><br/>shut up about</h2>
+    <div class="faves-grid">
+      <div class="fave-card pink-card">
+        <p class="fave-num">01 //</p>
+        <h3 class="fave-name">Project Sekai</h3>
+        <p class="fave-desc">all units. all characters. zero skips. my heart belongs to every single one of them equally (i'm lying).</p>
+      </div>
+      <div class="fave-card teal-card">
+        <p class="fave-num">02 //</p>
+        <h3 class="fave-name">Vocaloid</h3>
+        <p class="fave-desc">the producers, the lore, the songs that make me cry on the bus. a lifestyle not a hobby.</p>
+      </div>
+      <div class="fave-card purple-card">
+        <p class="fave-num">03 //</p>
+        <h3 class="fave-name">NSO / NGO</h3>
+        <p class="fave-desc">needy streamer overload destroyed me. KAngel is everything. the ending that got me was not okay.</p>
+      </div>
+      <div class="fave-card yellow-card">
+        <p class="fave-num">04 //</p>
+        <h3 class="fave-name">Honkai: Star Rail</h3>
+        <p class="fave-desc">i pull on every banner. i cannot read the meta. i am having the time of my life regardless.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p class="footer-logo">DeSigma ✦</p>
+    <p class="footer-text">made with ♡ and vocaloid — <a href="#">back to top ↑</a></p>
+  </footer>
+
+  <div class="glitch-bar"></div>
+
+  <!-- Occasional error flicker -->
+  <div class="error-flicker">ERR_HEART_NOT_FOU

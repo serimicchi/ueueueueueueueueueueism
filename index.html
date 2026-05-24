@@ -668,4 +668,90 @@
   <div class="glitch-bar"></div>
 
   <!-- Occasional error flicker -->
-  <div class="error-flicker">ERR_HEART_NOT_FOU
+  <div class="error-flicker">ERR_HEART_NOT_FOUND</div>
+
+  <script>
+    // Floating sparkles
+    const sparkleChars = ['✦', '✧', '★', '✩', '♪', '♫', '⊹', '˖'];
+    const sparkleColors = ['#ff2d78', '#ff6faa', '#00f5d4', '#b388ff', '#ffe66d', '#ffd6e8'];
+    const container = document.getElementById('sparkles');
+
+    function createSparkle() {
+      const el = document.createElement('span');
+      el.className = 'sparkle';
+      el.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+      el.style.left = Math.random() * 100 + '%';
+      el.style.color = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+      el.style.animationDuration = (6 + Math.random() * 8) + 's';
+      el.style.animationDelay = (Math.random() * 4) + 's';
+      el.style.fontSize = (10 + Math.random() * 14) + 'px';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 14000);
+    }
+
+    setInterval(createSparkle, 600);
+    for (let i = 0; i < 8; i++) setTimeout(createSparkle, i * 200);
+
+    // Marquee
+    const marqueeItems = [
+      'project sekai', 'vocaloid', 'needy streamer overload',
+      'KAngel', 'honkai star rail', 'miku', 'len', 'rin',
+      'nightcord at 25:00', 'leo/need', 'vivid bad squad', 'wonderlands×showtime',
+      'more more jump', 'an unnamed girl overdose', 'ERR_NOT_FOUND',
+    ];
+
+    const track = document.getElementById('marqueeTrack');
+    const doubled = [...marqueeItems, ...marqueeItems];
+    doubled.forEach(item => {
+      const span = document.createElement('span');
+      span.className = 'marquee-item';
+      span.innerHTML = item + ' <span>✦</span>';
+      track.appendChild(span);
+    });
+  </script>
+  <script>
+    function handleAuth() {
+      if (localStorage.getItem('loggedIn') === 'true') {
+        localStorage.clear();
+        document.getElementById('authBtn').textContent = 'login';
+      } else {
+        window.location.href = 'login/index.html';
+      }
+    }
+
+    if (localStorage.getItem('loggedIn') === 'true') {
+      document.getElementById('authBtn').textContent = 'logout';
+    }
+
+    // Sparkles
+    const sparkleChars = ['✦', '✧', '★', '✩', '♪', '♫', '⊹', '˖'];
+    const sparkleColors = ['#ff2d78', '#ff6faa', '#00f5d4', '#b388ff', '#ffe66d', '#ffd6e8'];
+    const container = document.getElementById('sparkles');
+    function createSparkle() {
+      const el = document.createElement('span');
+      el.className = 'sparkle';
+      el.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+      el.style.left = Math.random() * 100 + '%';
+      el.style.color = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+      el.style.animationDuration = (6 + Math.random() * 8) + 's';
+      el.style.animationDelay = (Math.random() * 4) + 's';
+      el.style.fontSize = (10 + Math.random() * 14) + 'px';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 14000);
+    }
+    setInterval(createSparkle, 600);
+    for (let i = 0; i < 8; i++) setTimeout(createSparkle, i * 200);
+
+    // Marquee
+    const marqueeItems = ['project sekai','vocaloid','needy streamer overload','KAngel','honkai star rail','miku','len','rin','nightcord at 25:00','leo/need','vivid bad squad','wonderlands×showtime','more more jump','an unnamed girl overdose','ERR_NOT_FOUND'];
+    const track = document.getElementById('marqueeTrack');
+    const doubled = [...marqueeItems, ...marqueeItems];
+    doubled.forEach(item => {
+      const span = document.createElement('span');
+      span.className = 'marquee-item';
+      span.innerHTML = item + ' <span>✦</span>';
+      track.appendChild(span);
+    });
+  </script>
+</body>
+</html>
